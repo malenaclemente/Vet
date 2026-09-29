@@ -22,3 +22,5 @@ Clemente Malena Ailen
 - React Native
 - Expo
 - JavaScript / TypeScript
+
+Gestión de turnos: agenda y asignación de citas. Historial clínico / Notas: registro de consultas, tratamientos y vacunas por mascota. Notificaciones / Recordatorios: avisos de vacunación y controles.

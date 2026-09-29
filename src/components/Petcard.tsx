@@ -1,87 +1,71 @@
-import React from "react";
-import {
-  Image,
-  StyleSheet,
-  Text,
-  View
-} from "react-native";
+// src/components/Petcard.tsx
+import { Image, StyleSheet, Text, View } from "react-native";
 
+// 1. Declarar la interfaz con las propiedades que le pasas desde index.tsx
 interface PetCardProps {
   name: string;
   breed: string;
   age: string;
   status: string;
-  image: any; // Recibe la imagen de require(...)
+  image?: any;
 }
 
-export const PetCard: React.FC<PetCardProps> = ({
+// 2. Asignar la interfaz a los parámetros de la función
+export default function PetCard({
   name,
   breed,
   age,
   status,
   image,
-}) => {
+}: PetCardProps) {
   return (
     <View style={styles.card}>
-      {/* Se pasa directamente a source sin {{ uri }} */}
-      <Image source={image} style={styles.image} resizeMode="cover" />
+      {image && <Image source={image} style={styles.image} />}
       <View style={styles.info}>
         <Text style={styles.name}>{name}</Text>
         <Text style={styles.details}>
           {breed} • {age}
         </Text>
-        <View style={styles.badge}>
-          <Text style={styles.badgeText}>{status}</Text>
-        </View>
+        <Text style={styles.status}>{status}</Text>
       </View>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: "#ffffff",
+    backgroundColor: "#FFFFFF",
     borderRadius: 12,
-    marginBottom: 14,
-    overflow: "hidden",
+    padding: 16,
+    marginBottom: 12,
+    flexDirection: "row",
+    alignItems: "center",
     borderWidth: 1,
-    borderColor: "#e5e7eb",
-    elevation: 2,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 4,
+    borderColor: "#E2E8F0",
   },
   image: {
-    width: "100%",
-    height: 160,
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    marginRight: 12,
   },
   info: {
-    padding: 14,
+    flex: 1,
   },
   name: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: "#111827",
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#1E293B",
   },
   details: {
     fontSize: 14,
-    color: "#6b7280",
+    color: "#64748B",
     marginTop: 2,
   },
-  badge: {
-    alignSelf: "flex-start",
-    backgroundColor: "#ecfdf5",
-    borderColor: "#a7f3d0",
-    borderWidth: 1,
-    borderRadius: 6,
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    marginTop: 8,
-  },
-  badgeText: {
+  status: {
     fontSize: 12,
-    color: "#047857",
+    color: "#0D9488",
+    marginTop: 4,
     fontWeight: "600",
   },
 });
