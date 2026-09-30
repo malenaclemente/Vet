@@ -1,4 +1,5 @@
-// src/store/usePetStore.ts
+//Base de datos de Mascotas
+
 import { create } from "zustand";
 
 export interface RegistroVacuna {

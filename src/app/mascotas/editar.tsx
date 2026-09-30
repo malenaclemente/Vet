@@ -3,14 +3,14 @@ import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import {
-    Alert,
-    Platform,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Alert,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { usePetStore } from "../../store/usePetStore";
 
@@ -39,13 +39,12 @@ export default function EditarMascotaScreen() {
     );
   }
 
-  // Estados de datos generales
+  // Estados de datos generales (sin microchip)
   const [nombre, setNombre] = useState(mascota.nombre);
   const [especie, setEspecie] = useState(mascota.especie);
   const [raza, setRaza] = useState(mascota.raza);
   const [edad, setEdad] = useState(mascota.edad);
   const [peso, setPeso] = useState(mascota.peso);
-  const [microchip, setMicrochip] = useState(mascota.microchip || "");
   const [alergias, setAlergias] = useState(mascota.alergias || "");
   const [alimentosToxicos, setAlimentosToxicos] = useState(
     mascota.alimentosToxicos || "",
@@ -71,7 +70,6 @@ export default function EditarMascotaScreen() {
       raza: raza.trim(),
       edad: edad.trim(),
       peso: peso.trim(),
-      microchip: microchip.trim(),
       alergias: alergias.trim(),
       alimentosToxicos: alimentosToxicos.trim(),
       dieta: dieta.trim(),
@@ -99,7 +97,6 @@ export default function EditarMascotaScreen() {
       veterinario: veterinario.trim() || "Veterinaria Central",
     });
 
-    // Limpiamos los inputs del historial
     setMotivo("");
     setDiagnostico("");
     setVeterinario("");
@@ -172,13 +169,6 @@ export default function EditarMascotaScreen() {
           </View>
         </View>
 
-        <Text style={styles.label}>Microchip</Text>
-        <TextInput
-          style={styles.input}
-          value={microchip}
-          onChangeText={setMicrochip}
-        />
-
         <Text style={styles.label}>Alergias</Text>
         <TextInput
           style={styles.input}
@@ -205,11 +195,10 @@ export default function EditarMascotaScreen() {
         </TouchableOpacity>
       </View>
 
-      {/* SECCIÓN 2: GESTIÓN DEL HISTORIAL CLÍNICO */}
+      {/* SECCIÓN 2: HISTORIAL CLÍNICO */}
       <View style={styles.cardSection}>
         <Text style={styles.sectionHeaderTitle}>2. Historial Clínico</Text>
 
-        {/* Listado de consultas existentes */}
         <Text style={styles.subSectionTitle}>Consultas Registradas:</Text>
         {mascota.historialClinico.length === 0 ? (
           <Text style={styles.emptyNote}>No hay consultas registradas.</Text>
@@ -235,25 +224,18 @@ export default function EditarMascotaScreen() {
           ))
         )}
 
-        {/* Formulario para agregar una nueva consulta */}
         <Text style={[styles.subSectionTitle, { marginTop: 18 }]}>
           Agregar Nueva Consulta:
         </Text>
 
         <Text style={styles.label}>Fecha</Text>
-        <TextInput
-          style={styles.input}
-          value={fecha}
-          onChangeText={setFecha}
-          placeholder="AAAA-MM-DD"
-        />
+        <TextInput style={styles.input} value={fecha} onChangeText={setFecha} />
 
         <Text style={styles.label}>Motivo de la consulta *</Text>
         <TextInput
           style={styles.input}
           value={motivo}
           onChangeText={setMotivo}
-          placeholder="Ej: Control de vacunas, vómitos, etc."
         />
 
         <Text style={styles.label}>Diagnóstico y Tratamiento *</Text>
@@ -261,7 +243,6 @@ export default function EditarMascotaScreen() {
           style={[styles.input, { height: 70 }]}
           value={diagnostico}
           onChangeText={setDiagnostico}
-          placeholder="Detalle de medicación o indicaciones..."
           multiline
         />
 
@@ -270,7 +251,6 @@ export default function EditarMascotaScreen() {
           style={styles.input}
           value={veterinario}
           onChangeText={setVeterinario}
-          placeholder="Ej: Dr. Pérez"
         />
 
         <TouchableOpacity

@@ -1,25 +1,26 @@
-// src/app/agregar.tsx
+// Pantalla de formulario
+
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
-    Alert,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Alert,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
-// Importamos el store desde la carpeta store dentro de src
 import { usePetStore } from "../store/usePetStore";
 
 export default function AgregarMascotaScreen() {
   const router = useRouter();
 
-  // Extraemos la acción de Zustand para guardar
+  // Acción para guardar de Zustand
   const agregarMascota = usePetStore((state) => state.agregarMascota);
 
-  // Estados locales para cada campo del formulario
+  // Estados locales temporales para cada campo
   const [nombre, setNombre] = useState("");
   const [especie, setEspecie] = useState("");
   const [raza, setRaza] = useState("");
@@ -27,13 +28,18 @@ export default function AgregarMascotaScreen() {
   const [peso, setPeso] = useState("");
 
   const handleGuardar = () => {
-    // Validamos que los campos esenciales no queden en blanco
+    // 1. Validar campos requeridos
     if (!nombre.trim() || !especie.trim()) {
-      Alert.alert("Atención", "Nombre y especie son obligatorios.");
+      //! y ||  es vacio y/o
+      if (Platform.OS === "web") {
+        window.alert("Atención: Nombre y especie son obligatorios.");
+      } else {
+        Alert.alert("Atención", "Nombre y especie son obligatorios.");
+      }
       return;
     }
 
-    // Guardamos en el store global
+    // 2. Guardar en el store de Zustand
     agregarMascota({
       nombre: nombre.trim(),
       especie: especie.trim(),
@@ -42,10 +48,15 @@ export default function AgregarMascotaScreen() {
       peso: peso.trim(),
     });
 
-    // Notificamos y volvemos a la pantalla anterior
-    Alert.alert("¡Listo!", "Mascota registrada correctamente.", [
-      { text: "Aceptar", onPress: () => router.back() },
-    ]);
+    // 3. Avisar al usuario y volver atrás
+    if (Platform.OS === "web") {
+      window.alert("¡Listo! Mascota registrada correctamente.");
+      router.back();
+    } else {
+      Alert.alert("¡Listo!", "Mascota registrada correctamente.", [
+        { text: "Aceptar", onPress: () => router.back() },
+      ]);
+    }
   };
 
   return (
@@ -56,14 +67,16 @@ export default function AgregarMascotaScreen() {
       <TextInput
         style={styles.input}
         placeholder="Ej: Rocco, Luna..."
-        value={nombre}
-        onChangeText={setNombre}
+        placeholderTextColor="#94A3B8"
+        value={nombre} // {/*mostrar adentro lo que vale la variable nombre
+        onChangeText={setNombre} //Cada vez que el usuario toque una tecla, llamá a setNombre para actualizar la variable con la nueva letra
       />
 
       <Text style={styles.label}>Especie *</Text>
       <TextInput
         style={styles.input}
         placeholder="Ej: Canino, Felino..."
+        placeholderTextColor="#94A3B8"
         value={especie}
         onChangeText={setEspecie}
       />
@@ -72,6 +85,7 @@ export default function AgregarMascotaScreen() {
       <TextInput
         style={styles.input}
         placeholder="Ej: Golden, Mestizo..."
+        placeholderTextColor="#94A3B8"
         value={raza}
         onChangeText={setRaza}
       />
@@ -82,6 +96,7 @@ export default function AgregarMascotaScreen() {
           <TextInput
             style={styles.input}
             placeholder="Ej: 3"
+            placeholderTextColor="#94A3B8"
             value={edad}
             onChangeText={setEdad}
             keyboardType="numeric"
@@ -93,9 +108,10 @@ export default function AgregarMascotaScreen() {
           <TextInput
             style={styles.input}
             placeholder="Ej: 14"
+            placeholderTextColor="#94A3B8"
             value={peso}
             onChangeText={setPeso}
-            keyboardType="numeric"
+            keyboardType="numeric" //Es una orden especial para el teléfono. En vez de abrir el teclado con letras A-B-C, le ordena al celular que abra el teclado con los números 0 al 9.
           />
         </View>
       </View>
@@ -103,7 +119,7 @@ export default function AgregarMascotaScreen() {
       <TouchableOpacity
         style={styles.boton}
         activeOpacity={0.7}
-        onPress={handleGuardar}
+        onPress={handleGuardar} //cuando apriete ejecutar funcion
       >
         <Text style={styles.textoBoton}>Guardar Mascota</Text>
       </TouchableOpacity>

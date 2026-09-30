@@ -1,23 +1,23 @@
-// src/app/login.tsx
+// Autenticación y Control de Acceso.
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
-    Alert,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Alert,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
-import { useAuthStore, UserRole } from "../store/useAuthStore";
+import { useAuthStore, UserRole } from "../store/useAuthStore"; //El almacén global donde vive la sesión del usuario. //UserRole: Un tipo de dato de TypeScript que nos restringe las opciones a solo dos textos válidos: "dueno" o "veterinaria".
 
 export default function LoginScreen() {
   const router = useRouter();
-  const { iniciarSesion, recuperarContrasena } = useAuthStore();
+  const { iniciarSesion, recuperarContrasena } = useAuthStore(); //dos funciones: una para verificar credenciales y otra para recuperar la clave.
 
-  const [rolSeleccionado, setRolSeleccionado] = useState<UserRole>("dueno");
+  const [rolSeleccionado, setRolSeleccionado] = useState<UserRole>("dueno"); //memorias temporales
   const [email, setEmail] = useState("dueno@mismascotas.com");
   const [password, setPassword] = useState("123456");
 
@@ -40,7 +40,7 @@ export default function LoginScreen() {
       return;
     }
 
-    const exito = iniciarSesion(email, password);
+    const exito = iniciarSesion(email, password); //consulta con zusztand si hay un usuario con esos datos
 
     if (exito) {
       // replace en lugar de push para que el login salga del historial de navegación
@@ -56,7 +56,7 @@ export default function LoginScreen() {
       return;
     }
 
-    const existe = recuperarContrasena(email);
+    const existe = recuperarContrasena(email); //simula el envio de email
     if (existe) {
       Alert.alert(
         "Correo enviado",
@@ -68,6 +68,7 @@ export default function LoginScreen() {
   };
 
   return (
+    //La Interfaz Visual: Encabezado y Selector de Rol
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.header}>
         <View style={styles.iconCircle}>

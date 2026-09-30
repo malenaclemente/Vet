@@ -41,7 +41,7 @@ const USUARIOS_DEMO: UserProfile[] = [
 ];
 
 export const useAuthStore = create<AuthState>((set) => ({
-  usuarioActual: USUARIOS_DEMO[0], // Inicia con sesión de dueño por defecto para probar directo
+  usuarioActual: null, // 👈 Al empezar en null, nadie ha iniciado sesión todavía
 
   iniciarSesion: (email, _contrasena) => {
     const usuario = USUARIOS_DEMO.find(

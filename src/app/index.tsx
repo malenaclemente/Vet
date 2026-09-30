@@ -1,9 +1,9 @@
-// src/app/index.tsx
+// Pantalla principal
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { useEffect } from "react";
+import { useEffect } from "react"; //sincronizar tu componente con un sistema externo a React, sirve para ejecutar una acción automática apenas la pantalla se carga o cuando una variable vigilada cambia
 import {
-  SafeAreaView,
+  SafeAreaView, //Un contenedor especial para celulares que evita que el contenido se superponga con la barra de estado superior (batería, hora, señal) o el notch de la cámara.
   ScrollView,
   StyleSheet,
   Text,
@@ -18,20 +18,21 @@ import { useAuthStore } from "../store/useAuthStore";
 import { usePetStore } from "../store/usePetStore";
 
 export default function HomeScreen() {
-  const router = useRouter();
+  //Declaramos la función principal pública que dibuja el inicio.
+  const router = useRouter(); //Declaramos la variable del navegador
 
-  const mascotas = usePetStore((state) => state.mascotas);
-  const { usuarioActual, cambiarRol, cerrarSesion } = useAuthStore();
+  const mascotas = usePetStore((state) => state.mascotas); //Nos conectamos al almacén de mascotas y extraemos el arreglo mascotas
+  const { usuarioActual, cerrarSesion } = useAuthStore(); //buscamos usuario y para cerrar
 
-  // Si no hay usuario logueado, redirige a la pantalla de Login
+  // Redirigir a login si no hay sesión activa
   useEffect(() => {
     if (!usuarioActual) {
-      router.replace("/login" as any);
+      router.replace("/login" as any); //Usamos .replace en vez de .push para que la pantalla de inicio no quede guardada en el historial de navegación (así el usuario no puede volver atrás presionando la flecha del celular)
     }
   }, [usuarioActual]);
 
   if (!usuarioActual) {
-    return null; // Evita parpadeos mientras procesa la redirección
+    return null;
   }
 
   const handleCerrarSesion = () => {
@@ -39,6 +40,13 @@ export default function HomeScreen() {
     router.replace("/login" as any);
   };
 
+  const esVeterinaria = usuarioActual.rol === "veterinaria";
+
+  {
+    {
+      /* cambiar los colores si es vet o dueño*/
+    }
+  }
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView
@@ -46,45 +54,29 @@ export default function HomeScreen() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* Barra superior de cambio de Rol (Módulo 1 y 2) */}
-        <View style={styles.roleBar}>
-          <Text style={styles.roleLabel}>Modo de vista:</Text>
-          <TouchableOpacity
+        {/* Barra superior: Identificador del rol activo y botón Cerrar Sesión */}
+        <View style={styles.topBar}>
+          <View
             style={[
-              styles.roleBtn,
-              usuarioActual.rol === "dueno" && styles.roleBtnActive,
+              styles.roleBadge,
+              esVeterinaria ? styles.roleBadgeVet : styles.roleBadgeOwner,
             ]}
-            onPress={() => cambiarRol("dueno")}
           >
+            <Ionicons
+              name={esVeterinaria ? "medkit" : "person"}
+              size={14}
+              color={esVeterinaria ? "#2563EB" : "#0D9488"}
+            />
             <Text
               style={[
-                styles.roleBtnText,
-                usuarioActual.rol === "dueno" && styles.roleBtnTextActive,
+                styles.roleBadgeText,
+                esVeterinaria ? styles.roleTextVet : styles.roleTextOwner,
               ]}
             >
-              Dueño
+              {esVeterinaria ? "Cuenta Veterinaria" : "Cuenta Tutor / Dueño"}
             </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[
-              styles.roleBtn,
-              usuarioActual.rol === "veterinaria" && styles.roleBtnActive,
-            ]}
-            onPress={() => cambiarRol("veterinaria")}
-          >
-            <Text
-              style={[
-                styles.roleBtnText,
-                usuarioActual.rol === "veterinaria" && styles.roleBtnTextActive,
-              ]}
-            >
-              Veterinaria
-            </Text>
-          </TouchableOpacity>
-        </View>
+          </View>
 
-        {/* Botón Cerrar Sesión */}
-        <View style={styles.logoutContainer}>
           <TouchableOpacity
             onPress={handleCerrarSesion}
             style={styles.logoutBtn}
@@ -95,48 +87,49 @@ export default function HomeScreen() {
           </TouchableOpacity>
         </View>
 
-        {/* Perfil del Usuario / Veterinaria */}
-        <OwnerProfile
+        <OwnerProfile //muestra datos del perfil
           name={usuarioActual.nombre}
           phone={usuarioActual.telefono}
           location={
-            usuarioActual.rol === "veterinaria"
-              ? "Atención Clínica"
+            esVeterinaria
+              ? usuarioActual.horarios || "Atención Clínica"
               : "Córdoba, Argentina"
           }
           petsCount={mascotas.length}
           avatar={OWNER_DATA.avatar}
         />
-
-        {/* Sección: Lista de Pacientes o Mascotas (Módulo 3) */}
+        {/* Sección: Lista según el rol */}
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>
-            {usuarioActual.rol === "veterinaria"
-              ? "Pacientes en Seguimiento"
-              : "Mis Mascotas"}
+            {esVeterinaria ? "Pacientes en Seguimiento" : "Mis Mascotas"}
           </Text>
           <Text style={styles.sectionBadge}>{mascotas.length}</Text>
         </View>
-
-        {mascotas.map((pet) => (
-          <TouchableOpacity
-            key={pet.id}
-            activeOpacity={0.8}
-            onPress={() => router.push(`/mascotas/${pet.id}` as any)}
-          >
-            <PetCard
-              name={pet.nombre}
-              breed={`${pet.especie} • ${pet.raza}`}
-              age={`${pet.edad} años`}
-              status={
-                pet.alergias ? `Alergias: ${pet.alergias}` : "Ficha al día"
-              }
-            />
-          </TouchableOpacity>
-        ))}
+        {mascotas.map(
+          (
+            pet,
+            {
+              /* Es un bucle. Toma el arreglo de mascotas guardado en Zustand y por cada mascota individual (pet) fabrica un componente <PetCard */
+            },
+          ) => (
+            <TouchableOpacity
+              key={pet.id}
+              activeOpacity={0.8}
+              onPress={() => router.push(`/mascotas/${pet.id}` as any)} //cuando apreta muestra los datos de la mascota
+            >
+              <PetCard
+                name={pet.nombre}
+                breed={`${pet.especie} • ${pet.raza}`}
+                age={`${pet.edad} años`}
+                status={
+                  pet.alergias ? `Alergias: ${pet.alergias}` : "Ficha al día"
+                }
+              />
+            </TouchableOpacity>
+          ),
+        )}
       </ScrollView>
-
-      {/* Botón flotante para registrar paciente/mascota */}
+      {/*botón para dar de alta la mascota, lleva al formulario */}
       <TouchableOpacity
         style={styles.fab}
         activeOpacity={0.8}
@@ -152,39 +145,41 @@ const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: "#F9FAFB" },
   container: { flex: 1 },
   scrollContent: { padding: 20, paddingBottom: 100 },
-  roleBar: {
+  topBar: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 12,
-    backgroundColor: "#E2E8F0",
-    padding: 4,
-    borderRadius: 10,
+    justifyContent: "space-between",
+    marginBottom: 16,
   },
-  roleLabel: {
-    fontSize: 13,
-    fontWeight: "600",
-    color: "#475569",
-    marginLeft: 8,
-    marginRight: 10,
-  },
-  roleBtn: {
-    flex: 1,
+  roleBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    paddingHorizontal: 12,
     paddingVertical: 6,
-    alignItems: "center",
-    borderRadius: 8,
+    borderRadius: 20,
   },
-  roleBtnActive: { backgroundColor: "#FFFFFF" },
-  roleBtnText: { fontSize: 13, color: "#64748B", fontWeight: "600" },
-  roleBtnTextActive: { color: "#0D9488", fontWeight: "bold" },
-  logoutContainer: {
-    flexDirection: "row",
-    justifyContent: "flex-end",
-    marginBottom: 12,
+  roleBadgeOwner: {
+    backgroundColor: "#CCFBF1",
+  },
+  roleBadgeVet: {
+    backgroundColor: "#DBEAFE",
+  },
+  roleBadgeText: {
+    fontSize: 12,
+    fontWeight: "700",
+    textTransform: "uppercase",
+  },
+  roleTextOwner: {
+    color: "#0F766E",
+  },
+  roleTextVet: {
+    color: "#1D4ED8",
   },
   logoutBtn: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 6,
+    gap: 4,
   },
   logoutText: {
     color: "#EF4444",

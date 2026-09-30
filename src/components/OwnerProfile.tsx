@@ -1,12 +1,8 @@
 import React from "react";
-import {
-    Image,
-    StyleSheet,
-    Text,
-    View
-} from "react-native";
+import { Image, StyleSheet, Text, View } from "react-native";
 
 interface OwnerProfileProps {
+  //Creamos y hacemos pública una variable constante
   name: string;
   phone: string;
   location: string;

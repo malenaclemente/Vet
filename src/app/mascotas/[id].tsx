@@ -157,11 +157,6 @@ export default function DetalleMascotaScreen() {
 
           <Text style={styles.itemLabel}>Peso</Text>
           <Text style={styles.itemValue}>{mascota.peso} kg</Text>
-
-          <Text style={styles.itemLabel}>Microchip</Text>
-          <Text style={styles.itemValue}>
-            {mascota.microchip || "No registrado"}
-          </Text>
         </View>
       )}
 
